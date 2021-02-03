@@ -9,7 +9,7 @@ import count_cards_func
 
 video_screenshot = cv2.imread('screens/screen2.jpg')
 
-card_template = cv2.imread('screens/example_card.jpg',0)
+card_template = cv2.imread('screens/example_card.jpg', 0)
 
 count_cards_func.count_cards(
     screenshot=video_screenshot,
@@ -21,4 +21,3 @@ count_cards_func.count_cards(
     template=card_template,
     threshold=0.7,
     output_location="results/example_point7.png")
-
