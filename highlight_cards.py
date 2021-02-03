@@ -1,5 +1,6 @@
 
-def count_cards(screenshot, template, threshold=0.8, output_location="outputs/output.png"):
+def highlight_cards(screenshot, template, color="green", threshold=0.8):
+
     # Import needed packages
     import cv2
     import numpy as np
@@ -8,6 +9,15 @@ def count_cards(screenshot, template, threshold=0.8, output_location="outputs/ou
 
     # Convert screenshot to grey and crop
     gray_img = cv2.cvtColor(screenshot, cv2.COLOR_BGR2GRAY)[0:630, 0:950]
+    # cropped_img = gray_img[0:630 , 0:950]
+
+    # Set the color we'll use for the box
+    if color == "blue":
+        box_color = (255, 0, 0)
+    elif color == "red":
+        box_color = (0, 0, 255)
+    else:
+        box_color = (0, 255, 0)
 
     # Get the cards dimensions
     w, h = template.shape[::-1]
@@ -24,7 +34,9 @@ def count_cards(screenshot, template, threshold=0.8, output_location="outputs/ou
     # Excludes a new point if it's too close to an existing card
     def notInList(newObject):
         for detectedObject in detectedObjects:
-            if math.hypot(newObject[0]-detectedObject[0], newObject[1]-detectedObject[1]) < thresholdDist:
+            if math.hypot(
+                    newObject[0]-detectedObject[0],
+                    newObject[1]-detectedObject[1]) < thresholdDist:
                 return False
         return True
 
@@ -33,6 +45,7 @@ def count_cards(screenshot, template, threshold=0.8, output_location="outputs/ou
     for pt in zip(*loc[::-1]):
         if len(detectedObjects) == 0 or notInList(pt):
             detectedObjects.append(pt)
-            cv2.rectangle(screenshot, pt, (pt[0] + w, pt[1] + h), (0, 0, 255), 2)
+            cv2.rectangle(screenshot, pt, (pt[0] + w, pt[1] + h), box_color, 2)
+
     # Save the result
-    cv2.imwrite(output_location, screenshot)
+    return screenshot
