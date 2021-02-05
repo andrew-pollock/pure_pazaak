@@ -1,5 +1,18 @@
 
-def highlight_cards(screenshot, template, color="green", threshold=0.8):
+def highlight_cards(screenshot,
+                    template,
+                    color="green",
+                    threshold=0.8,
+                    thresholdDist=30):
+    """Identifies any instances of a template image within a larger screenshot.
+
+    Args:
+        screenshot: This is the image to search
+        template: The image that you're looking for within screenshot
+        color: The color of the box you want to draw. Defaults to "green".
+        threshold: How good a match is required for a box to be draw. Defaults to 0.8.
+        thresholdDist: The minimum Euclidean distance between matches for them to be considered as a new card. Defaults to 30.
+    """
 
     # Import needed packages
     import cv2
@@ -9,7 +22,6 @@ def highlight_cards(screenshot, template, color="green", threshold=0.8):
 
     # Convert screenshot to grey and crop
     gray_img = cv2.cvtColor(screenshot, cv2.COLOR_BGR2GRAY)[0:630, 0:950]
-    # cropped_img = gray_img[0:630 , 0:950]
 
     # Set the color we'll use for the box
     if color == "blue":
@@ -28,24 +40,27 @@ def highlight_cards(screenshot, template, color="green", threshold=0.8):
 
     # Create an empty list for valid cards
     detectedObjects = []
-    # Set the threshold for how far apart cards must be
-    thresholdDist = 30
 
-    # Excludes a new point if it's too close to an existing card
-    def notInList(newObject):
-        for detectedObject in detectedObjects:
-            if math.hypot(
-                    newObject[0]-detectedObject[0],
-                    newObject[1]-detectedObject[1]) < thresholdDist:
-                return False
-        return True
-
-    # Append every card which passes the above criteria to my list
+    # Append every card which is further than thresholdDist
     # Draw a box on the original image showing the location of each card
     for pt in zip(*loc[::-1]):
-        if len(detectedObjects) == 0 or notInList(pt):
+        if len(detectedObjects) == 0 or _notInList(pt):
             detectedObjects.append(pt)
             cv2.rectangle(screenshot, pt, (pt[0] + w, pt[1] + h), box_color, 2)
 
     # Save the result
     return screenshot
+
+
+def _notInList(newObject):
+    """
+    Calculates the Euclidean distance of a new match from all previous matches.
+    If the distance is smaller than the threshold, returns False otherwise
+    returns True.
+    """
+    for detectedObject in detectedObjects:
+        if math.hypot(
+                newObject[0]-detectedObject[0],
+                newObject[1]-detectedObject[1]) < thresholdDist:
+            return False
+    return True

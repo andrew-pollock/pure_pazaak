@@ -23,7 +23,7 @@ while success:
     out.write(image)
     cv2.imshow('my_image', image)
 
-    if cv2.waitKey(10) & 0xFF == ord('q'):
+    if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
 vidcap.release()
