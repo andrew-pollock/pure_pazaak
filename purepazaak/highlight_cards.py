@@ -1,4 +1,20 @@
 
+def _notInList(newObject, detectedObjects, thresholdDist):
+    """
+    Calculates the Euclidean distance of a new match from all previous matches.
+    If the distance is smaller than the threshold, returns False otherwise
+    returns True.
+    """
+    import math
+
+    for detectedObject in detectedObjects:
+        if math.hypot(
+                newObject[0] - detectedObject[0],
+                newObject[1] - detectedObject[1]) < thresholdDist:
+            return False
+    return True
+
+
 def highlight_cards(screenshot,
                     template,
                     color="green",
@@ -43,24 +59,13 @@ def highlight_cards(screenshot,
 
     # Append every card which is further than thresholdDist
     # Draw a box on the original image showing the location of each card
-    for pt in zip(*loc[::-1]):
-        if len(detectedObjects) == 0 or _notInList(pt):
-            detectedObjects.append(pt)
-            cv2.rectangle(screenshot, pt, (pt[0] + w, pt[1] + h), box_color, 2)
+    for new_object in zip(*loc[::-1]):
+        if len(detectedObjects) == 0 or _notInList(new_object, detectedObjects, thresholdDist):
+            detectedObjects.append(new_object)
+            cv2.rectangle(screenshot,
+                          new_object,
+                          (new_object[0] + w, new_object[1] + h),
+                          box_color, 2)
 
     # Save the result
     return screenshot
-
-
-def _notInList(newObject):
-    """
-    Calculates the Euclidean distance of a new match from all previous matches.
-    If the distance is smaller than the threshold, returns False otherwise
-    returns True.
-    """
-    for detectedObject in detectedObjects:
-        if math.hypot(
-                newObject[0]-detectedObject[0],
-                newObject[1]-detectedObject[1]) < thresholdDist:
-            return False
-    return True

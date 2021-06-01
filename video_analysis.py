@@ -1,16 +1,16 @@
 
-
 import cv2
 import math
-from highlight_cards import *
+from purepazaak import *
 
 yellow_template = cv2.imread('screens/example_card.jpg', 0)
 blue_template = cv2.imread('screens/example_plus5.jpg', 0)
 
-
+# I'm not sure what this is doing?
 fourcc = cv2.VideoWriter_fourcc(*'XVID')
-out = cv2.VideoWriter('output.avi', fourcc, fps=30.0, frameSize=(1280, 720))
 
+# Set where the altered video will be saved to
+out = cv2.VideoWriter('output.avi', fourcc, fps=30.0, frameSize=(1280, 720))
 
 vidcap = cv2.VideoCapture('clip/example_clip.mp4')
 success = True
